@@ -3,9 +3,9 @@
 ##
 
 import pygame, random
+pygame.init()
 
 invisibleKey = [ 255,   0, 255 ]  # Bright Magenta will be made transparent.
-
 
 class Star(pygame.sprite.Sprite):
     xvel = 0
@@ -17,13 +17,9 @@ class Star(pygame.sprite.Sprite):
         # Load a sprite image in.
         self.image = pygame.image.load('assets\\art\star.png').convert()
         self.image.set_colorkey(invisibleKey)
-        self.image = pygame.transform.scale(self.image,
-                                            [self.image.get_width(),
-                                             self.image.get_height()])
-
-        # Get image dimensions into the rect object and set X,Y coords.
+        
+        # Get image dimensions into the rect object
         self.rect = self.image.get_rect()
-        self.rect
         
     def transform(self):
         center = self.rect.center
@@ -67,8 +63,6 @@ class Star(pygame.sprite.Sprite):
         #    print ("off top")
             
             
-        
-pygame.init()
 
 # Define screen
 screen_width = 450

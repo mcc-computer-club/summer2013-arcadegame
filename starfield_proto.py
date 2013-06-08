@@ -18,7 +18,6 @@ class Star(pygame.sprite.Sprite):
         self.image.set_colorkey(invisibleKey)
         # Get image dimensions into the rect object and set X,Y coords.
         self.rect = self.image.get_rect()
-        self.rect
         
     def transform(self):
         center = self.rect.center
@@ -52,12 +51,12 @@ pygame.init()
 # Define screen at 450x800 (700 height is being used for testing
 #   since my screen at least is short)
 screen_width = 450
-screen_height = 700
+screen_height = 500
 screen  = pygame.display.set_mode([screen_width, screen_height])
 
 # Building the starfield
 starField = pygame.sprite.Group()
-for i in range(50): # Only handle 50 star sprites in starfield
+for i in range(100): # Only handle 50 star sprites in starfield
     star = Star()
 
     # Set X, Y coords and velocity.
@@ -65,13 +64,13 @@ for i in range(50): # Only handle 50 star sprites in starfield
     star.rect.y = random.randrange(screen_height)
     #star.xvel = random.randrange(-2,2)*10
     star.xvel = 0
-    star.yvel = random.randrange(1,4)*5
+    star.yvel = random.randrange(1,7)*5
 
     # Adjust opacity
-    star.image.set_alpha((star.yvel/5)*64)
+    star.image.set_alpha((star.yvel/5)*(255/6))
 
     # Scaling code
-    star.factor = (1/8)*(star.yvel/5)
+    star.factor = (1/6)*(star.yvel/5)
     star.transform()
     starField.add(star)
 
