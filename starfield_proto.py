@@ -10,6 +10,8 @@ invisibleKey = [ 255,   0, 255 ]  # Bright Magenta will be made transparent.
 class Star(pygame.sprite.Sprite):
     xvel = 0
     yvel = 0
+    rotVel = 1
+    rotAngle = 0
     factor = float(1) #controls size
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -18,6 +20,8 @@ class Star(pygame.sprite.Sprite):
         self.image.set_colorkey(invisibleKey)
         # Get image dimensions into the rect object and set X,Y coords.
         self.rect = self.image.get_rect()
+        self.rotAngle = 0
+        
         
     def transform(self):
         center = self.rect.center
@@ -40,10 +44,15 @@ class Star(pygame.sprite.Sprite):
         global screen       #seems easier to extend scope of screen.
         self.rect.x += self.xvel
         self.rect.y += self.yvel
-
         # check if gone off bottom
         if self.rect.y - self.rect.height > screen.get_height():
             self.reset_vars()
+
+        # rotate
+        #self.rotAngle += self.rotVel
+        #if self.rotAngle > 360-self.rotVel:
+        #    self.rotAngle = 0
+        #self.image = pygame.transform.rotozoom(self.image, self.rotVel, 1)
             
         
 pygame.init()
@@ -64,13 +73,13 @@ for i in range(100): # Only handle 50 star sprites in starfield
     star.rect.y = random.randrange(screen_height)
     #star.xvel = random.randrange(-2,2)*10
     star.xvel = 0
-    star.yvel = random.randrange(1,7)*5
+    star.yvel = random.randrange(1,7)*1
 
     # Adjust opacity
-    star.image.set_alpha((star.yvel/5)*(255/6))
+    star.image.set_alpha((star.yvel/1)*(255/6))
 
     # Scaling code
-    star.factor = (1/6)*(star.yvel/5)
+    star.factor = (1/6)*(star.yvel/1)
     star.transform()
     starField.add(star)
 
