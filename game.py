@@ -22,7 +22,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
         for i in range(frames):
             try:
                 # file name is such: "path\to\file\Xsprite.png" Where x is frame number.
-                img = pygame.image.load(ARTPATH + str(i) + imageFile).convert()
+                img = pygame.image.load(ARTPATH + imageFile + str(i) + ".png").convert_alpha()
                 img.set_colorkey([255, 0, 255])
             except:
                 #terminal error
@@ -36,7 +36,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def flipFrame(self):
-        self.frameIndex += 1
+        self.frameIndex += (time.time() - self.lastFlip) // self.framDelay
         if self.frameIndex > len(self.images)-1:
             self.frameIndex = 0
         self.image = self.images[self.frameIndex]
@@ -44,27 +44,51 @@ class AnimatedSprite(pygame.sprite.Sprite):
         center = self.rect.center
         self.rect = self.image.get_rect()
         self.rect.center = center
+        #set the time of the flip under lastFlip
+        self.lastFlip = time.time()
         
     def update(self):
         if time.time() >= self.lastFlip + self.frameDelay:
             self.flipFrame()
-            self.lastFlip = time.time()
         
     def draw(self):
         screen.blit(self.image, self.rect)
         
+# Planned class for shots/bullets.
+class Shot(pygame.sprite.Sprite()):
+    def __init__(self, [x,y], shotType=0, flip=False): 
+        pygame.sprite.Sprite.__init__(self)
+        # if.. elif.. else.. block for setting variables dependent on shotType
+        if shotType == 1:
+            imageFile = "regshot" # Regular for now. Something else later
+            self.damage = 20
+        else:
+            imageFile = "regshot" # if shotType ID no. is not available, use regular shots
+            self.damage = 10
+        # load image for sprite
+        self.image = pygame.image.load(ARTPATH + "shot\\" + imageFile + ".png").convert_alpha()
+        self.rect = self.image.get_rect()
+        self.rect.center = [x,y]
+        
 # Planned class for ships, including player and enemies
-#class Ship(AnimatedSprite):
-#    def __init__(self, imageFile):
-#        pygame.sprite.Sprite.__init__(self)
+class Ship(AnimatedSprite):
+    maxHP = int()
+    currHP = int() # Current HP
+    rect = pygame.rect.Rect()
+    shotsArray = pygame.sprite.Group() # An array to hold all subsidiary shot objects
+    def __init__(self, imageFile, maxhp, [x,y]):
+        AnimatedSprite._init_(self)
+        self.maxHP = HP
+        self.hp = self.maxHP
+        self.rect.center = [x,y]
+
+    def shoot(self):
+        
             
         
 
 screen = pygame.display.set_mode([800,450])
 clock = pygame.time.Clock()
-
-testAnim = AnimatedSprite("rgbcirc.png", 3, .2)
-testAnim.rect.center = [100, 100]
 
 
 done = False
@@ -74,7 +98,6 @@ while not done:
             done = True
 
     #update code block
-    testAnim.update()
 
     
     # draw code block
