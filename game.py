@@ -21,8 +21,12 @@ def main():
     clock = pygame.time.Clock()
     done = False
     player = gameClasses.Player()
-    # Main Loop
 
+    # Testing the Enemy Class
+    testEnemy = gameClasses.Enemy()
+    testEnemy.rect.center = [500,200]
+
+    # Main Loop
     while not done:
         # Event handling
         for event in pygame.event.get():
@@ -43,17 +47,20 @@ def main():
         if done:
             return # If we're done, why run all the update code?
 
+        testEnemy.update()
         player.update()
 
         # draw code block
         screen.fill([0,0,0]) # Fill with black
 
+        testEnemy.draw()
         player.draw()
 
         pygame.display.flip() # Flip make changes visible
         clock.tick(60) # Limit execution speed.
 
+
+
 if __name__ == '__main__':
-#    init()
     main()
 pygame.quit()

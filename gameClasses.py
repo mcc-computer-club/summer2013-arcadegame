@@ -14,11 +14,12 @@ import time
 import pygame
 
 
-ARTPATH = 'assets\\art\\'
+ARTPATH = 'assets/art/'
 
 def __init__(scrn):
     global screen
     screen = scrn
+
 
 class AnimatedSprite(pygame.sprite.Sprite):
     x=0
@@ -53,10 +54,10 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def flipFrame(self):
-        self.frameIndex += (time.time() - self.lastFlip) // self.frameDelay
+        self.frameIndex += int((time.time() - self.lastFlip) // self.frameDelay)
         if self.frameIndex > len(self.images)-1:
             self.frameIndex = 0
-        self.image = self.images[int(self.frameIndex)]
+        self.image = self.images[self.frameIndex]
         # Preserve former position
         center = self.rect.center
         self.rect = self.image.get_rect()
@@ -71,6 +72,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
     def draw(self):
         screen.blit(self.image, self.rect)
+
 
 # Planned class for shots/bullets.
 class Shot(pygame.sprite.Sprite):
@@ -92,11 +94,14 @@ class Shot(pygame.sprite.Sprite):
             self.damage = 10
             self.vel = 10
         # load image for sprite
-        self.image = pygame.image.load(ARTPATH + "shot\\" + imageFile + ".png"
+        self.image = pygame.image.load(ARTPATH + "shot/" + imageFile + ".png"
                                        ).convert_alpha()
                                        # ... Last line STILL looks ugly.
         self.rect = self.image.get_rect()
         self.rect.center = xy_coord
+        if self.flip:
+            print("Flipped")
+            self.image = pygame.transform.flip(self.image, True, False)
 
     def update(self):
         # Move the shot in proper direction
@@ -112,6 +117,7 @@ class Shot(pygame.sprite.Sprite):
     def draw(self):
         screen.blit(self.image, self.rect)
         pygame.draw.rect(screen,[255,0,0],self.rect, 1)
+
 
 # Planned class for ships. Parent to player and enemy classes
 class Ship(AnimatedSprite):
@@ -129,11 +135,11 @@ class Ship(AnimatedSprite):
         self.currHP = self.maxHP
         self.rect.center = xy_coord
 
-    def shoot(self):
+    def shoot(self, flip=False):
         if ((self.shotCooldown < time.time() - self.lastShotTime) and
             (len(self.shotsGroup) < self.maxShots)):
             #newShot = Shot(self.rect.midright, self.shotType)
-            self.shotsGroup.add(Shot(self.rect.midright, self.shotType))
+            self.shotsGroup.add(Shot(self.rect.midright, self.shotType, flip))
             self.lastShotTime = time.time()
 
     def update(self):
@@ -145,6 +151,7 @@ class Ship(AnimatedSprite):
     def draw(self):
         AnimatedSprite.draw(self)
         self.shotsGroup.draw(screen)
+
 
 class Player(Ship):
     def __init__(self):
@@ -172,7 +179,9 @@ class Player(Ship):
                     self.xvel = self.speed
             # Action keys. Will use inline comments for each.
             if event.key == pygame.K_SPACE:  # Shoot.
-                self.shoot()
+                self.shoot(False)
+            if event.key == pygame.K_RETURN:  # Shoot.
+                self.shoot(True)
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_DOWN:
@@ -191,6 +200,19 @@ class Player(Ship):
                 self.xvel += self.speed
                 #if self.xvel > self.speed:
                 #    self.xvel = self.speed
+
+    def update(self):
+        Ship.update(self)
+
+    def draw(self):
+        Ship.draw(self)
+
+
+class Enemy(Ship):
+    def __init__(self):
+        Ship.__init__(self, [100,100], "testplayer", 3, 50)
+        self.speed = 5
+        self.image = pygame.transform.flip(self.image, True, False)
 
     def update(self):
         Ship.update(self)

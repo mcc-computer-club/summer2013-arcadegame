@@ -14,7 +14,7 @@ screen_height = 450
 screen  = pygame.display.set_mode([screen_width, screen_height])
 
 class Star(pygame.sprite.Sprite):
-    image = pygame.image.load('.\\assets\\art\star_alph.png').convert_alpha()
+    image = pygame.image.load('assets/art/star_alph.png').convert_alpha()
     xvel = 0
     yvel = 0
     rotVel = 1
