@@ -1,18 +1,24 @@
 Summer 2013 Arcade Game
 ===
 
-This is a repo for the summer arcade game project for the MCC Maple Woods Computer Club.
+This is a repository for the summer arcade game project for the MCC Maple Woods Computer Club.
 
 
 Details
 ---
-Many details are yet to be determined. All we currently know is that we're wanting to  make a scrolling shooter game, at least from what we last discussed in club meetings before we closed out the Spring semester.
+We are working on a scrolling shooter game set in space, and focusing on rich storytelling.
 
-This means that we need to work on what sort of game environment we want to create. Do we want to have a WWII aircraft theme, or some futuristic space shooter? Perhaps something else altogether? Once we answer this question we can start to brainstorm what direction to take with creative assets and what features to implement.
+
+Technical Information
+---
+The game is being programmed in Python 3.x and utilizing the PyGame and PygAnim modules.
+We plan to release the game on a Raspbery Pi.
 
 
 Contributors
 ---
-Because we want to thank those that are giving up some of their time this Summer, we will list those that help out, including their particular role once that solidifies.
+Because we want to thank those that are giving up some of their time this Summer, we will list those that help out, including their particular role.
 
-+ Douglas Keech - Project Leader
++ Douglas Keech - Project Manager / Lead Software Architect
++ Jaclyn Titterington - Lead Writer
++ Ryan Fritz - Software Developer
