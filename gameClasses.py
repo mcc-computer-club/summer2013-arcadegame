@@ -20,11 +20,10 @@ def __init__(scrn):
     global screen
     screen = scrn
 
-
 class AnimatedSprite(pygame.sprite.Sprite):
     x=0
     y=0
-    def __init__(self, imageFile, frames, frameDelay=.1):
+    def __init__(self, imageFile, frames, frameDelay=.1, flip=False):
         pygame.sprite.Sprite.__init__(self)
         # Set up frame delay timing variables
         self.frameDelay = frameDelay
@@ -32,15 +31,17 @@ class AnimatedSprite(pygame.sprite.Sprite):
         # Load frames into self.images array of surface objects.
         self.images = []
         self.frameIndex = 0
+        # Set if flipped.
+        self.flip = flip
         for i in range(frames):
             try:
                 # File name is such: "path\to\file\spriteX.png" Where X is
                 #   frame number.
                 img = pygame.image.load(ARTPATH + imageFile + str(i) + ".png"
                                         ).convert_alpha()
-                                        # Last line looks ugly but I'm trying to
+                                        #Last line looks ugly but I'm trying to
                                         # follow PEP 8!
-                img.set_colorkey([255, 0, 255])
+                #img.set_colorkey([255, 0, 255])
             except:
                 #terminal error
                 # Change Error messages after release.
@@ -49,6 +50,8 @@ class AnimatedSprite(pygame.sprite.Sprite):
                 print("Quitting now, bye.")
                 pygame.quit()
                 quit()
+            if flip:
+                img = pygame.transform.flip(img, True, False)
             self.images.append(img)
         self.image = self.images[0]
         self.rect = self.image.get_rect()
@@ -121,8 +124,8 @@ class Shot(pygame.sprite.Sprite):
 
 # Planned class for ships. Parent to player and enemy classes
 class Ship(AnimatedSprite):
-    def __init__(self, xy_coord, imageFile, frames, maxhp):
-        AnimatedSprite.__init__(self, imageFile, frames)
+    def __init__(self, xy_coord, imageFile, frames, maxhp, flip=False):
+        AnimatedSprite.__init__(self, imageFile, frames, .1 , flip)
         self.xvel = 0
         self.yvel = 0
         self.shotsGroup = pygame.sprite.Group()
@@ -143,10 +146,15 @@ class Ship(AnimatedSprite):
             self.lastShotTime = time.time()
 
     def update(self):
+        # Run proper animation code
         AnimatedSprite.update(self)
+        # Move the ship by its velocity
         self.rect.x += self.xvel
         self.rect.y += self.yvel
+        # Update the shots associated with this ship.
         self.shotsGroup.update()
+        # Collisions
+        #self.shotsGroup.
 
     def draw(self):
         AnimatedSprite.draw(self)
@@ -179,27 +187,17 @@ class Player(Ship):
                     self.xvel = self.speed
             # Action keys. Will use inline comments for each.
             if event.key == pygame.K_SPACE:  # Shoot.
-                self.shoot(False)
-            if event.key == pygame.K_RETURN:  # Shoot.
-                self.shoot(True)
+                self.shoot()
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_DOWN:
                 self.yvel -= self.speed
-                #if self.yvel < -self.speed:
-                #    self.yvel = -self.speed
             if event.key == pygame.K_UP:
                 self.yvel += self.speed
-                #if self.yvel > self.speed:
-                #    self.yvel = self.speed
             if event.key == pygame.K_RIGHT:
                 self.xvel -= self.speed
-                #if self.xvel < -self.speed:
-                #    self.xvel = -self.speed
             if event.key == pygame.K_LEFT:
                 self.xvel += self.speed
-                #if self.xvel > self.speed:
-                #    self.xvel = self.speed
 
     def update(self):
         Ship.update(self)
@@ -210,7 +208,7 @@ class Player(Ship):
 
 class Enemy(Ship):
     def __init__(self):
-        Ship.__init__(self, [100,100], "testplayer", 3, 50)
+        Ship.__init__(self, [100,100], "testplayer", 3, 50, True)
         self.speed = 5
         self.image = pygame.transform.flip(self.image, True, False)
 
@@ -219,3 +217,4 @@ class Enemy(Ship):
 
     def draw(self):
         Ship.draw(self)
+
