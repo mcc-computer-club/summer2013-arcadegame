@@ -19,12 +19,16 @@ ARTPATH = 'assets/art/'
 def __init__(scrn):
     global screen
     screen = scrn
+    global allSprites
+    allSprites = pygame.sprite.Group()
 
 class AnimatedSprite(pygame.sprite.Sprite):
     x=0
     y=0
     def __init__(self, imageFile, frames, frameDelay=.1, flip=False):
         pygame.sprite.Sprite.__init__(self)
+        if self not in allSprites:
+            allSprites.add(self)
         # Set up frame delay timing variables
         self.frameDelay = frameDelay
         self.lastFlip = time.time()
@@ -81,6 +85,8 @@ class AnimatedSprite(pygame.sprite.Sprite):
 class Shot(pygame.sprite.Sprite):
     def __init__(self, xy_coord, shotType=0, flip=False):
         pygame.sprite.Sprite.__init__(self)
+        if self not in allSprites:
+            allSprites.add(self)
         # self.flip is a bool. When false, image is not flipped, and will face
         #   and move right. When true, image will be flipped to face and move
         #   left.
@@ -116,16 +122,43 @@ class Shot(pygame.sprite.Sprite):
         if ((self.rect.midleft[0] > screen.get_width()) or
         (self.rect.midright[0] < 0)):
             self.kill()
+        # Check Collisions
+        #collisionList = pygame.sprite.spritecollideany(self, allSprites)
+        collisionList = pygame.sprite.Group()
+        collisionList = pygame.sprite.spritecollide(self, allSprites, False)
+        for sprite in collisionList:
+            if isinstance(sprite, Shot):
+                print("Shot on shot action")
+                collisionList.remove(sprite)
+            if self in collisionList:
+                collisionList.remove(self)
+        if len(collisionList) > 0:
+            print(collisionList)
+            print("in if..")
+            for sprite in collisionList:
+                print("In FOR loop..")
+                try:
+                    sprite.onCollision(self)
+                    print("ran collision routine")
+                except:
+                    print("exception")
+                    pass
+                collisionList.remove(sprite)
+
+        def onCollision(self, collSprite):
+            pass
 
     def draw(self):
         screen.blit(self.image, self.rect)
-        pygame.draw.rect(screen,[255,0,0],self.rect, 1)
+        pygame.draw.rect(screen,[255,255,0],self.rect, 1)
 
 
 # Planned class for ships. Parent to player and enemy classes
 class Ship(AnimatedSprite):
     def __init__(self, xy_coord, imageFile, frames, maxhp, flip=False):
         AnimatedSprite.__init__(self, imageFile, frames, .1 , flip)
+        if self not in allSprites:
+            allSprites.add(self)
         self.xvel = 0
         self.yvel = 0
         self.shotsGroup = pygame.sprite.Group()
@@ -145,25 +178,37 @@ class Ship(AnimatedSprite):
             self.shotsGroup.add(Shot(self.rect.midright, self.shotType, flip))
             self.lastShotTime = time.time()
 
+    def onCollision(self, collSprite):
+        pass
+        if isinstance(collSprite, Shot):
+            self.currHP -= collSprite.damage
+            collSprite.kill()
+
     def update(self):
         # Run proper animation code
         AnimatedSprite.update(self)
+        # Check if still alive.
+        if self.currHP <= 0:
+            pass
+            #self.kill()
         # Move the ship by its velocity
         self.rect.x += self.xvel
         self.rect.y += self.yvel
         # Update the shots associated with this ship.
         self.shotsGroup.update()
-        # Collisions
-        #self.shotsGroup.
 
     def draw(self):
         AnimatedSprite.draw(self)
-        self.shotsGroup.draw(screen)
+        #self.shotsGroup.draw(screen)
+        for shot in self.shotsGroup:
+            shot.draw() #screen)
 
 
 class Player(Ship):
     def __init__(self):
         Ship.__init__(self, [100,100], "testplayer", 3, 50)
+        if self not in allSprites:
+            allSprites.add(self)
         self.speed = 5
 
     def eventHandler(self, event):
@@ -199,16 +244,29 @@ class Player(Ship):
             if event.key == pygame.K_LEFT:
                 self.xvel += self.speed
 
+    def onCollision(self, collSprite):
+        pass
+        if isinstance(collSprite, Shot):
+            if collSptite in self.shotsGroup:
+                pass
+            else:
+                Ship.onCollision(self, collSprite)
+        else:
+            Ship.onCollision(self, collSprite)
+
     def update(self):
         Ship.update(self)
 
     def draw(self):
         Ship.draw(self)
+        pygame.draw.rect(screen, [0,0,255], self.rect, 1)
 
 
 class Enemy(Ship):
     def __init__(self):
         Ship.__init__(self, [100,100], "testplayer", 3, 50, True)
+        if self not in allSprites:
+            allSprites.add(self)
         self.speed = 5
         self.image = pygame.transform.flip(self.image, True, False)
 
@@ -217,4 +275,6 @@ class Enemy(Ship):
 
     def draw(self):
         Ship.draw(self)
+        pygame.draw.rect(screen, [255,0,0], self.rect, 1)
+
 

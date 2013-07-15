@@ -57,7 +57,7 @@ def main():
         player.draw()
 
         pygame.display.flip() # Flip make changes visible
-        clock.tick(60) # Limit execution speed.
+        clock.tick(10) # Limit execution speed.
 
 
 
