@@ -80,7 +80,7 @@ for i in range(100): # Only handle 50 star sprites in starfield
     star.rect.x = random.randrange(screen_width)
     star.rect.y = random.randrange(screen_height)
     star.yvel = 0
-    star.xvel = 0-(random.randrange(1,7)*.5)
+    star.xvel = 0-(random.randrange(1,7)*1)
 
     # Adjust opacity
     star.image.set_alpha((abs(star.xvel)/1)*(255/6))
