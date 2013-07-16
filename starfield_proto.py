@@ -31,6 +31,7 @@ class Star(pygame.sprite.Sprite):
 
 
     def transform(self):
+        # Sets scaling size
         center = self.rect.center
         self.origWidth = self.image.get_width()
         self.origHeight = self.image.get_height()
@@ -85,7 +86,7 @@ for i in range(100): # Only handle 50 star sprites in starfield
     # Adjust opacity
     star.image.set_alpha((abs(star.xvel)/1)*(255/6))
 
-    # Scaling code
+    # Scaling code changes the size of the star based on its velosity
     star.factor = (1/6)*(star.xvel/1)
     if star.factor < 0: star.factor *= -1
     star.transform()
