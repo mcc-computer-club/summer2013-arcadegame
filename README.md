@@ -11,14 +11,5 @@ We are working on a scrolling shooter game set in space, and focusing on rich st
 
 Technical Information
 ---
-The game is being programmed in Python 3.x and utilizing the PyGame and PygAnim modules.
+The game is being programmed in Python 3.x and utilizing the PyGame module.
 We plan to release the game on a Raspbery Pi.
-
-
-Contributors
----
-Because we want to thank those that are giving up some of their time this Summer, we will list those that help out, including their particular role.
-
-+ Douglas Keech - Project Manager / Lead Software Architect
-+ Jaclyn Titterington - Lead Writer
-+ Ryan Fritz - Software Developer
