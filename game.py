@@ -2,18 +2,18 @@
 # Name:        Main Game File
 # Purpose:     Entry point and main code for the game.
 #
-# Author:      Douglas Keech
+# Author:      Maple Woods Computer Club
+#              - Douglas Keech
 #
 # Created:     16/06/2013
 # Copyright:   (c) MCC Maple Woods Computer Club 2013
 # Licence:     (No licence currently defined.)
 #-------------------------------------------------------------------------------
 
-import pygame
 import random
 import time
+import pygame
 import gameClasses
-
 
 def main():
     screen = pygame.display.set_mode([800,450])
@@ -58,7 +58,6 @@ def main():
 
         pygame.display.flip() # Flip make changes visible
         clock.tick(10) # Limit execution speed.
-
 
 
 if __name__ == '__main__':

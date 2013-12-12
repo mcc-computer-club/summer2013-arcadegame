@@ -14,7 +14,7 @@ import time
 import pygame
 
 
-ARTPATH = 'assets/art/'
+ARTPATH = './assets/art/'
 
 def __init__(scrn):
     global screen
@@ -22,9 +22,8 @@ def __init__(scrn):
     global allSprites
     allSprites = pygame.sprite.Group()
 
+
 class AnimatedSprite(pygame.sprite.Sprite):
-    x=0
-    y=0
     def __init__(self, imageFile, frames, frameDelay=.1, flip=False):
         pygame.sprite.Sprite.__init__(self)
         if self not in allSprites:
@@ -47,9 +46,9 @@ class AnimatedSprite(pygame.sprite.Sprite):
                                         # follow PEP 8!
                 #img.set_colorkey([255, 0, 255])
             except:
-                #terminal error
+                # Terminal error
                 # Change Error messages after release.
-                print("Someone used the wrong filename!")
+                print("Someone used the wrong filename! "+ARTPATH+imageFile+str(i)+".png")
                 print("Or, well, is missing the files. Bad files!")
                 print("Quitting now, bye.")
                 pygame.quit()
@@ -122,31 +121,35 @@ class Shot(pygame.sprite.Sprite):
         if ((self.rect.midleft[0] > screen.get_width()) or
         (self.rect.midright[0] < 0)):
             self.kill()
-        # Check Collisions
-        #collisionList = pygame.sprite.spritecollideany(self, allSprites)
+        #self.checkCollisions()
+
+    # Check Collisions
+    def checkCollisions(self):
         collisionList = pygame.sprite.Group()
         collisionList = pygame.sprite.spritecollide(self, allSprites, False)
-        for sprite in collisionList:
-            if isinstance(sprite, Shot):
-                print("Shot on shot action")
-                collisionList.remove(sprite)
-            if self in collisionList:
-                collisionList.remove(self)
+        #for sprite in collisionList:
+        #    if isinstance(sprite, Shot):
+        #        #print("Shot on shot action")
+        #        collisionList.remove(sprite)
+        if self in collisionList:
+            collisionList.remove(self)
         if len(collisionList) > 0:
-            print(collisionList)
+            print(len(collisionList), collisionList)
             print("in if..")
             for sprite in collisionList:
                 print("In FOR loop..")
                 try:
                     sprite.onCollision(self)
-                    print("ran collision routine")
+                    print("ran collision routine: ", sprite)
                 except:
                     print("exception")
                     pass
                 collisionList.remove(sprite)
 
-        def onCollision(self, collSprite):
-            pass
+    def onCollision(self, collSprite):
+        if isinstance(collSprite, Shot):
+            self.currHP -= collSprite.damage
+            collSprite.kill()
 
     def draw(self):
         screen.blit(self.image, self.rect)
@@ -172,17 +175,40 @@ class Ship(AnimatedSprite):
         self.rect.center = xy_coord
 
     def shoot(self, flip=False):
-        if ((self.shotCooldown < time.time() - self.lastShotTime) and
-            (len(self.shotsGroup) < self.maxShots)):
+        #if ((self.shotCooldown < time.time() - self.lastShotTime) and
+        #    (len(self.shotsGroup) < self.maxShots)):
+        if (1 == 1):
             #newShot = Shot(self.rect.midright, self.shotType)
             self.shotsGroup.add(Shot(self.rect.midright, self.shotType, flip))
             self.lastShotTime = time.time()
 
     def onCollision(self, collSprite):
-        pass
         if isinstance(collSprite, Shot):
             self.currHP -= collSprite.damage
             collSprite.kill()
+
+    # Check Collisions
+    def checkCollisions(self):
+        collisionList = pygame.sprite.Group()
+        collisionList = pygame.sprite.spritecollide(self, allSprites, False)
+        #for sprite in collisionList:
+        #    if isinstance(sprite, Shot):
+        #        #print("Shot on shot action")
+        #        collisionList.remove(sprite)
+        if self in collisionList:
+            collisionList.remove(self)
+        if len(collisionList) > 0:
+            print(len(collisionList), collisionList)
+            print("in if..")
+            for sprite in collisionList:
+                print("In FOR loop..")
+                try:
+                    sprite.onCollision(self)
+                    print("ran collision routine: ", sprite)
+                except:
+                    print("exception")
+                    pass
+                collisionList.remove(sprite)
 
     def update(self):
         # Run proper animation code
@@ -196,6 +222,7 @@ class Ship(AnimatedSprite):
         self.rect.y += self.yvel
         # Update the shots associated with this ship.
         self.shotsGroup.update()
+        self.checkCollisions()
 
     def draw(self):
         AnimatedSprite.draw(self)
@@ -210,6 +237,7 @@ class Player(Ship):
         if self not in allSprites:
             allSprites.add(self)
         self.speed = 5
+        self.shooting = 0
 
     def eventHandler(self, event):
         if event.type == pygame.KEYDOWN:
@@ -232,7 +260,8 @@ class Player(Ship):
                     self.xvel = self.speed
             # Action keys. Will use inline comments for each.
             if event.key == pygame.K_SPACE:  # Shoot.
-                self.shoot()
+                self.shooting = 1
+                #self.shoot()
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_DOWN:
@@ -243,6 +272,8 @@ class Player(Ship):
                 self.xvel -= self.speed
             if event.key == pygame.K_LEFT:
                 self.xvel += self.speed
+            if event.key == pygame.K_SPACE:
+                self.shooting = 0
 
     def onCollision(self, collSprite):
         pass
@@ -256,6 +287,8 @@ class Player(Ship):
 
     def update(self):
         Ship.update(self)
+        if self.shooting == 1:
+            self.shoot()
 
     def draw(self):
         Ship.draw(self)
@@ -276,5 +309,3 @@ class Enemy(Ship):
     def draw(self):
         Ship.draw(self)
         pygame.draw.rect(screen, [255,0,0], self.rect, 1)
-
-

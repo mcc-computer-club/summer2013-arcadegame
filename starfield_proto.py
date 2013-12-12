@@ -28,6 +28,7 @@ class Star(pygame.sprite.Sprite):
         # Get image dimensions into the rect object and set X,Y coords.
         self.rect = self.image.get_rect()
         self.rotAngle = 0
+        self.rotVel = random.randrange(-5,5)
 
 
     def transform(self):
