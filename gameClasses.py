@@ -170,6 +170,7 @@ class Ship(AnimatedSprite):
         self.maxHP = maxhp
         self.currHP = self.maxHP
         self.rect.center = xy_coord
+        
 
     def shoot(self, flip=False):
         if ((self.shotCooldown < time.time() - self.lastShotTime) and
